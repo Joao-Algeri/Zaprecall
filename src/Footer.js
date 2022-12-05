@@ -1,8 +1,8 @@
 import styled from 'styled-components';
-export default function Footer() {
+export default function Footer({contaRespondidos}) {
   return (
     <Conteudo>
-      <div>0/8 concluídos</div>
+      <div>{contaRespondidos}/8 concluídos</div>
     </Conteudo>)
 }
 const Conteudo = styled.div`

@@ -1,28 +1,76 @@
 import styled from 'styled-components';
 import seta_play from './img/seta_play.png'
 import seta_virar from './img/seta_virar.png'
-export default function Card() {
-  const cards = [
-    { pergunta: "O que é JSX?", resposta: "Uma extensão da linguagem JavaScript" },
-    { pergunta: "O React é __", resposta: "Uma biblioteca JavaScript para construção de interfaces" },
-    { pergunta: "Componentes devem iniciar com __", resposta: "Letra maiúscula" },
-    { pergunta: "Podemos colocar __ dentro do JSX", resposta: "expressões" },
-    { pergunta: "O ReactDOM nos ajuda __", resposta: "Interagindo com a DOM para colocar componentes React na mesma" },
-    { pergunta: "Usamos o npm para __", resposta: "Gerenciar os pacotes necessários e suas dependências" },
-    { pergunta: "Usamos props para __", resposta: "Passar diferentes informações para componentes" },
-    { pergunta: "Usamos estado (state) para __", resposta: "Dizer para o React quais informações quando atualizadas devem renderizar a tela novamente" }
-  ]
+import icone_certo from './img/icone_certo.png'
+import icone_quase from './img/icone_quase.png'
+import icone_errado from './img/icone_erro.png'
+import Botoes from './Botoes';
+export default function Card({ informacaoCards, setInformacaoCards, contaRespondidos, setContaRespondidos }) {
+
+
+
+  function PerguntaFechada({ card, informacaoCards, setInformacaoCards }) {
+
+    function viraCarta(id) {
+      let arrayAbertoOuFechado = [];
+      informacaoCards.map((carta) => arrayAbertoOuFechado.push(carta.aberto))
+      const temCartaAberta = arrayAbertoOuFechado.includes(true)
+      if (!temCartaAberta) {
+        const novaInformacao = [...informacaoCards]
+        novaInformacao[id].aberto = true;
+        setInformacaoCards(novaInformacao)
+      }
+    }
+    function Resultado() {
+      return (
+
+        card.resultado === "certo" ? <img src={icone_certo} alt="icone certo" />
+          :
+          card.resultado === "quase" ? <img src={icone_quase} alt="icone quase" />
+            :
+            card.resultado === "errado" ? <img src={icone_errado} alt="icone errado" />
+              :
+              <></>
+      )
+    }
+    return (card.resultado === "" ?
+      <p className='pergunta-fechada '>Pergunta {card.id + 1}
+        <img onClick={() => viraCarta(card.id)} src={seta_play} alt="seta play" />
+      </p>
+      :
+      <p className={`pergunta-fechada ${card.resultado}  `}>Pergunta {card.id + 1}
+        <Resultado />
+      </p>
+    )
+  }
+  function PerguntaAberta({ card, informacaoCards, setInformacaoCards }) {
+    function MostrarResposta(id, virado) {
+      if (virado === false) {
+
+        const novasInformacoes = [...informacaoCards]
+        novasInformacoes[id].virado = true;
+        setInformacaoCards(novasInformacoes)
+      }
+    }
+    return (card.virado === false ?
+      <p className='pergunta-aberta'>{card.pergunta}
+        <img onClick={() => MostrarResposta(card.id, card.virado)} src={seta_virar} alt="seta virar" />
+      </p>
+      :
+      <p className='pergunta-aberta'>{card.pergunta}
+        <Botoes id={card.id} informacaoCards={informacaoCards} setInformacaoCards={setInformacaoCards} contaRespondidos={contaRespondidos} setContaRespondidos={setContaRespondidos} />
+      </p>
+    )
+  }
   return (
     <Conteudo>
-      {cards.map((card, index) => <p  key={card.pergunta}className='pergunta-fechada '>Pergunta {index + 1}
-        <img key={card.resposta} src={seta_play} alt="seta play" />
-      </p>
-      )}
+      {informacaoCards.map((card) => card.aberto == false ? <PerguntaFechada card={card} informacaoCards={informacaoCards} setInformacaoCards={setInformacaoCards} /> : <PerguntaAberta card={card} informacaoCards={informacaoCards} setInformacaoCards={setInformacaoCards} />)}
+
     </Conteudo>)
 }
 const Conteudo=styled.div`
 .pergunta-fechada {
-width: 300px;
+ width: 300px;
   height: 35px;
   background-color: #FFFFFF;
   margin: 12px;
@@ -60,35 +108,12 @@ width: 300px;
   flex-direction: column;
   justify-content: space-between;
 }
-
 .pergunta-aberta > img{
   height:20px ;
   width:30px;
   position: absolute;
   bottom: 10px;
   right: 10px;
-}
-.container-botoes {
-  display: flex;
-  width: 95%;
-  justify-content: space-between;
-  margin: 10px;
-}
-.container-botoes > button {
-  width: 90px;
-  font-family: 'Recursive';
-  font-style: normal;
-  font-weight: 400;
-  font-size: 12px;
-  line-height: 14px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  color: #FFFFFF;
-  border-radius: 5px;
-  border: none;
-  padding:5px;
 }
 .verde{
   background:#2FBE34;
@@ -104,11 +129,14 @@ width: 300px;
 }
 .certo{
   color:#2FBE34;
+  text-decoration: line-through;
 }
 .quase{
   color:#FF922E;
+  text-decoration: line-through;
 }
 .errado{
   color:#FF3030;
+  text-decoration: line-through;
 }
 `
